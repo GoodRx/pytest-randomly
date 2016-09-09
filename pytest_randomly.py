@@ -42,6 +42,13 @@ def pytest_addoption(parser):
         dest='randomly_reorganize', default=True,
         help="Stop pytest-randomly from randomly reorganizing the test order."
     )
+    group._addoption(
+        '--randomly-dont-reset-seed-test-calls', action='store_false',
+        dest='randomly_reset_seed_test_call', default=True,
+        help="""Stop pytest-randomly from resetting random.seed() at the
+                start of every test call (i.e. only during test
+                setup/teardown)."""
+    )
 
 
 random_states = {}
@@ -79,7 +86,10 @@ def pytest_runtest_setup(item):
 
 
 def pytest_runtest_call(item):
-    if item.config.getoption('randomly_reset_seed'):
+    if (
+        item.config.getoption('randomly_reset_seed')
+        and item.config.getoption('randomly_reset_seed_test_call')
+    ):
         _reseed(item.config)
 
 

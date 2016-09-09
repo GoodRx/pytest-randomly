@@ -85,6 +85,7 @@ You can disable behaviours you don't like with the following flags:
 
 * ``--randomly-dont-reset-seed`` - turn off the reset of ``random.seed()`` at
   the start of every test
+* ``--randomly-dont-reset-seed-test-calls`` - turn off the reset of ``random.seed()`` multiple times within the test lifecycle
 * ``--randomly-dont-reorganize`` - turn off the shuffling of the order of tests
 
 The plugin appears to Pytest with the name 'randomly'. To disable it

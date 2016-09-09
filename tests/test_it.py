@@ -248,3 +248,43 @@ def test_doctests_reordered(testdir):
         'test_one.py::test_one.bar PASSED',
         'test_one.py::test_one.foo PASSED',
     ]
+
+
+def test_fixture_state_equivalent_to_test_state(testdir):
+    testdir.makepyfile(
+        test_one="""
+        import pytest
+        import random
+
+        @pytest.fixture
+        def fixture_state():
+            state = random.getstate()
+            random.random()
+            return state
+
+        def test_a(fixture_state):
+            assert random.getstate() == fixture_state
+        """
+    )
+    out = testdir.runpytest()
+    out.assert_outcomes(passed=1, failed=0)
+
+
+def test_fixture_state_not_equivalent_to_test_state(testdir):
+    testdir.makepyfile(
+        test_one="""
+        import pytest
+        import random
+
+        @pytest.fixture
+        def fixture_state():
+            state = random.getstate()
+            random.random()
+            return state
+
+        def test_a(fixture_state):
+            assert random.getstate() != fixture_state
+        """
+    )
+    out = testdir.runpytest('--randomly-dont-reset-seed-test-calls')
+    out.assert_outcomes(passed=1, failed=0)
